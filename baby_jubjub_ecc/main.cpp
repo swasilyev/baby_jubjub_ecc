@@ -498,6 +498,7 @@ void test_eddsa2() {
     pb.val(base_y) = FieldT("2626589144620713026669568689430873010625803728049924121243784502389097019475");
 
     const size_t n = 1;
+    assert(n % 2 == 1);
 
     // these are public keys,
     // EdDSA public key is a point on a curve
@@ -571,14 +572,29 @@ void test_eddsa2() {
         packers.emplace_back(packing_gadget<FieldT>(pb, ms[i], packed_messages[i], "packer_" + i));
         packers[i].generate_r1cs_constraints(false); //TODO: bitness
         packers[i].generate_r1cs_witness_from_bits();
-        std::cout << pb.val(packed_messages[i]) << std::endl;
     }
+    pb.val(result) = pb.val(packed_messages[0]);
 
 //    packing_gadget<FieldT> packer(pb, ms[0], result, "packer");
 //    packer.generate_r1cs_constraints(false); //TODO: bitness
 //    packer.generate_r1cs_witness_from_bits();
 
-//    std::cout << pb.val(result);
+    std::cout << "median = " << pb.val(result) << std::endl;
+    pb_variable_array<FieldT> less;
+    pb_variable_array<FieldT> less_or_eq;
+    less.allocate(pb, n, "less");
+    less_or_eq.allocate(pb, n, "less_or_eq");
+    std::vector<comparison_gadget<FieldT>> comparators;
+    for (size_t i = 0; i < n; i++) {
+        comparators.emplace_back(comparison_gadget<FieldT>(pb, FieldT::capacity(), result, packed_messages[i], less[i], less_or_eq[i], "comparator_" + i));
+        comparators[i].generate_r1cs_constraints();
+        comparators[i].generate_r1cs_witness();
+        std::cout << "i = " << i << ", m = " << pb.val(packed_messages[i]) << ", less = " << pb.val(less[i]) << ", less_or_eq = " << pb.val(less_or_eq[i]) << std::endl;
+    }
+
+    linear_combination<FieldT> less_or_eq_count = pb_sum<FieldT>(less_or_eq);
+    linear_combination<FieldT> more_or_eq_count = n - pb_sum<FieldT>(less);
+    pb.add_r1cs_constraint(r1cs_constraint<FieldT>(1, less_or_eq_count, more_or_eq_count), "less_or_eq_count == more_or_eq_count");
 
     assert(pb.is_satisfied());
     std::cout << pb.num_constraints() << std::endl;
