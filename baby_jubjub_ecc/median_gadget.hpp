@@ -36,6 +36,7 @@ namespace libsnark {
 
         median_gadget(protoboard<FieldT> &pb,
                       const size_t n,
+                      const pb_variable<FieldT> &median,
                       const std::vector<pb_variable_array<FieldT>> &pk_x_bins,
                       const std::vector<pb_variable_array<FieldT>> &pk_y_bins,
                       const std::vector<pb_variable_array<FieldT>> &r_x_bins,

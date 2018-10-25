@@ -49,6 +49,9 @@ int main() {
 
     protoboard<FieldT> pb;
 
+    pb_variable<FieldT> median;
+    median.allocate(pb, "median");
+
     std::vector<pb_variable_array<FieldT>> pk_x_bins(n);
     std::vector<pb_variable_array<FieldT>> pk_y_bins(n);
     for (size_t i = 0; i < n; i++) {
@@ -77,7 +80,7 @@ int main() {
     r_x_bins[0].fill_with_bits(pb, from_binary_string(r_x_bin));
     r_y_bins[0].fill_with_bits(pb, from_binary_string(r_y_bin));
 
-    median_gadget<FieldT, HashT> x(pb, 1, pk_x_bins, pk_y_bins, r_x_bins, r_y_bins, ss, ms);
+    median_gadget<FieldT, HashT> x(pb, 1, median, pk_x_bins, pk_y_bins, r_x_bins, r_y_bins, ss, ms);
     x.generate_r1cs_constraints();
     x.generate_r1cs_witness();
 

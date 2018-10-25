@@ -9,6 +9,7 @@ namespace libsnark {
     median_gadget<FieldT, HashT>::median_gadget(
             protoboard<FieldT> &pb,
             const size_t n,
+            const pb_variable<FieldT> &median,
             const std::vector<pb_variable_array<FieldT>> &pk_x_bins,
             const std::vector<pb_variable_array<FieldT>> &pk_y_bins,
             const std::vector<pb_variable_array<FieldT>> &r_x_bins,
@@ -17,6 +18,7 @@ namespace libsnark {
             const std::vector<pb_variable_array<FieldT>> &ms) :
             gadget<FieldT>(pb, "median_gadget"),
             n(n),
+            median(median),
             pk_x_bins(pk_x_bins),
             pk_y_bins(pk_y_bins),
             r_x_bins(r_x_bins),
@@ -34,7 +36,6 @@ namespace libsnark {
         assert(ss.size() == n);
         assert(ms.size() == n);
 
-        median.allocate(pb, "median");
         a.allocate(pb, "a");
         d.allocate(pb, "d");
         base_x.allocate(pb, "base x");
