@@ -91,6 +91,13 @@ if __name__ == "__main__":
     print( "    r_x_bin.fill_with_bits(pb,  {" , r_x_bin , "});")
     print( "    r_y_bin.fill_with_bits(pb,  {" , r_y_bin , "});")
 
+    with open('signature', 'w') as f:
+        print(''.join(str(c) for c in S_bin), file = f)
+        print(''.join(str(c) for c in message_bin), file = f)
+        print(''.join(str(c) for c in pk_x_bin), file = f)
+        print(''.join(str(c) for c in pk_y_bin), file = f)
+        print(''.join(str(c) for c in r_x_bin), file = f)
+        print(''.join(str(c) for c in r_y_bin), file = f)
 
     '''
     pb.val(r_y) = FieldT("309603861070827434771553290186311069341018266983092380603809384193577137789");
