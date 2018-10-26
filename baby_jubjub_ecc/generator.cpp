@@ -32,15 +32,6 @@ using namespace libsnark;
 typedef sha256_ethereum HashT;
 
 
-libff::bit_vector from_binary_string(std::string s) {
-    libff::bit_vector v;
-    for (auto b : s) {
-        v.emplace_back(b == '1');
-    }
-    return v;
-}
-
-
 int main() {
     typedef libff::alt_bn128_pp ppT;
     typedef libff::Fr<ppT> FieldT;
@@ -72,57 +63,31 @@ int main() {
         ms[i].allocate(pb, 256, "m_" + i);
     }
 
-    std::ifstream file("signature");
-    std::string S_bin, message_bin, pk_x_bin, pk_y_bin, r_x_bin, r_y_bin;
-    file >> S_bin >> message_bin >> pk_x_bin >> pk_y_bin >> r_x_bin >> r_y_bin;
-    ss[0].fill_with_bits(pb, from_binary_string(S_bin));
-    ms[0].fill_with_bits(pb, from_binary_string(message_bin));
-    pk_x_bins[0].fill_with_bits(pb, from_binary_string(pk_x_bin));
-    pk_y_bins[0].fill_with_bits(pb, from_binary_string(pk_y_bin));
-    r_x_bins[0].fill_with_bits(pb, from_binary_string(r_x_bin));
-    r_y_bins[0].fill_with_bits(pb, from_binary_string(r_y_bin));
-
     median_gadget<FieldT, HashT> x(pb, 1, median, pk_x_bins, pk_y_bins, r_x_bins, r_y_bins, ss, ms);
     x.generate_r1cs_constraints();
-    x.generate_r1cs_witness();
-
-    std::cout << "Median: " << pb.val(median) << std::endl;
-
-    assert(pb.is_satisfied());
 
     const size_t public_input_size = 1 + n * 2 * 256;
     pb.set_input_sizes(public_input_size); // median + n public keys
 
     libff::print_header("R1CS GG-ppzkSNARK Generator");
     r1cs_ppzksnark_keypair<ppT> keypair = r1cs_ppzksnark_generator<ppT>(pb.get_constraint_system());
-    printf("\n"); libff::print_indent(); libff::print_mem("after generator");
+    printf("\n");
+    libff::print_indent();
+    libff::print_mem("after generator");
 
     libff::print_header("Preprocess verification key");
     r1cs_ppzksnark_processed_verification_key<ppT> pvk = r1cs_ppzksnark_verifier_process_vk<ppT>(keypair.vk);
 
-    libff::print_header("R1CS GG-ppzkSNARK Prover");
-    r1cs_ppzksnark_proof<ppT> proof = r1cs_ppzksnark_prover<ppT>(keypair.pk, pb.primary_input(), pb.auxiliary_input());
-    printf("\n"); libff::print_indent(); libff::print_mem("after prover");
+    std::ofstream pk_dump("pk");
+    pk_dump << keypair.pk;
 
-//    std::vector<FieldT> public_input(public_input_size);
-    std::vector<FieldT> public_input;
-    public_input.emplace_back(123);
-    for (auto b : from_binary_string(pk_x_bin + pk_y_bin)) {
-        public_input.emplace_back(b);
-    }
+    std::ofstream vk_dump("vk");
+    vk_dump << keypair.vk;
 
-    std::cout << "Median: " << public_input[0] << std::endl;
+    std::ofstream pvk_dump("pvk");
+    pvk_dump << pvk;
 
-    libff::print_header("R1CS GG-ppzkSNARK Verifier");
-    const bool ans = r1cs_ppzksnark_verifier_strong_IC<ppT>(keypair.vk, public_input, proof);
-    printf("\n"); libff::print_indent(); libff::print_mem("after verifier");
-    printf("* The verification result is: %s\n", (ans ? "PASS" : "FAIL"));
-
-    libff::print_header("R1CS GG-ppzkSNARK Online Verifier");
-    const bool ans2 = r1cs_ppzksnark_online_verifier_strong_IC<ppT>(pvk, public_input, proof);
-    assert(ans == ans2);
-
-    std::cout << "Total constraint: " << pb.num_constraints() << std::endl;
+    std::cout << "Total constraints: " << pb.num_constraints() << std::endl;
 
     return 0;
 }
