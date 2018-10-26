@@ -42,6 +42,9 @@ int main() {
 
     protoboard<FieldT> pb;
 
+    // Protoboard is a... kinda protoboard. Here we define the inputs and connect (constraint) them using gadgets.
+
+    // Public inputs are always first.
     pb_variable<FieldT> median;
     median.allocate(pb, "median");
 
@@ -52,6 +55,8 @@ int main() {
         pk_y_bins[i].allocate(pb, 256, "pk_y_bin_" + i);
     }
 
+    // And these are our private inputs. Note that besides the inputs we provide the values for,
+    // gadgets are free to introduce additional
     std::vector<pb_variable_array<FieldT>> r_x_bins(n);
     std::vector<pb_variable_array<FieldT>> r_y_bins(n);
     std::vector<pb_variable_array<FieldT>> ss(n);
@@ -63,11 +68,16 @@ int main() {
         ms[i].allocate(pb, 256, "m_" + i);
     }
 
+    // Here comes the gadget. We "connect" it to our inputs, so that it will constraint them
+    // (maybe through some additional inputs it encapsulates).
     median_gadget<FieldT, HashT> x(pb, 1, median, pk_x_bins, pk_y_bins, r_x_bins, r_y_bins, ss, ms);
+
+    // The things that are important for key generation are inputs and constraints. Values are not.
+
     x.generate_r1cs_constraints();
 
-    const size_t public_input_size = 1 + n * 2 * 256;
-    pb.set_input_sizes(public_input_size); // median + n public keys
+    const size_t public_input_size = 1 + n * 2 * 256; // median + n public keys (points on the curve)
+    pb.set_input_sizes(public_input_size); // Which inputs are public is also important.
 
     libff::print_header("R1CS GG-ppzkSNARK Generator");
     r1cs_ppzksnark_keypair<ppT> keypair = r1cs_ppzksnark_generator<ppT>(pb.get_constraint_system());

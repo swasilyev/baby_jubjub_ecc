@@ -109,7 +109,6 @@ int main() {
     r1cs_ppzksnark_proof<ppT> proof = r1cs_ppzksnark_prover<ppT>(pk, pb.primary_input(), pb.auxiliary_input());
     printf("\n"); libff::print_indent(); libff::print_mem("after prover");
 
-//    std::vector<FieldT> public_input(public_input_size);
     std::vector<FieldT> public_input;
     public_input.emplace_back(123);
     for (auto b : from_binary_string(pk_x_bin + pk_y_bin)) {
@@ -127,7 +126,7 @@ int main() {
     const bool ans2 = r1cs_ppzksnark_online_verifier_strong_IC<ppT>(pvk, public_input, proof);
     assert(ans == ans2);
 
-    std::cout << "Total constraint: " << pb.num_constraints() << std::endl;
+    std::cout << "Total constraints: " << pb.num_constraints() << std::endl;
 
     return 0;
 }
