@@ -9,7 +9,7 @@
  * @date 2017
  */
 
-#include "wraplibsnark.hpp"
+//#include "wraplibsnark.hpp"
 #include <fstream>
 #include <iostream>
 #include <cassert>
