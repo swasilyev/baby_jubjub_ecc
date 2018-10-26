@@ -3,7 +3,7 @@ include_directories(.)
 add_executable(
   main
 
-  main.cpp
+        generator.cpp
 )
 
 add_library(
