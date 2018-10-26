@@ -26,6 +26,7 @@
 #include "eddsa.hpp"
 #include "pedersen_commitment.hpp"
 #include "median_gadget.cpp"
+#include "export.cpp"
 
 
 using namespace libsnark;
@@ -88,6 +89,10 @@ int main() {
     libff::print_header("Preprocess verification key");
     r1cs_ppzksnark_processed_verification_key<ppT> pvk = r1cs_ppzksnark_verifier_process_vk<ppT>(keypair.vk);
 
+    // We dump the keys in libsnark format. pk is required to the prover, vks -- for the verifier
+    // By the way reading the pk from disk is not that faster than generating it.
+    // So we will need to make the prover generate proofs online.
+
     std::ofstream pk_dump("pk");
     pk_dump << keypair.pk;
 
@@ -96,6 +101,9 @@ int main() {
 
     std::ofstream pvk_dump("pvk");
     pvk_dump << pvk;
+
+    // And also in json that will be used to instantiate the verifier smart contract
+    vk2json(keypair, "vk.json");
 
     std::cout << "Total constraints: " << pb.num_constraints() << std::endl;
 
