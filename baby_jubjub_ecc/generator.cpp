@@ -93,17 +93,17 @@ int main() {
     // By the way reading the pk from disk is not that faster than generating it.
     // So we will need to make the prover generate proofs online.
 
-    std::ofstream pk_dump("pk");
+    std::ofstream pk_dump("keys/pk");
     pk_dump << keypair.pk;
 
-    std::ofstream vk_dump("vk");
+    std::ofstream vk_dump("keys/vk");
     vk_dump << keypair.vk;
 
-    std::ofstream pvk_dump("pvk");
+    std::ofstream pvk_dump("keys/pvk");
     pvk_dump << pvk;
 
     // And also in json that will be used to instantiate the verifier smart contract
-    vk2json(keypair, "vk.json");
+    vk2json(keypair, "keys/vk.json");
 
     std::cout << "Total constraints: " << pb.num_constraints() << std::endl;
 

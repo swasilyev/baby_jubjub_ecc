@@ -72,7 +72,7 @@ int main() {
         ms[i].allocate(pb, 256, "m_" + i);
     }
 
-    std::ifstream file("signature");
+    std::ifstream file("keys/signature");
     std::string S_bin, message_bin, pk_x_bin, pk_y_bin, r_x_bin, r_y_bin;
     file >> S_bin >> message_bin >> pk_x_bin >> pk_y_bin >> r_x_bin >> r_y_bin;
     ss[0].fill_with_bits(pb, from_binary_string(S_bin));
@@ -94,15 +94,15 @@ int main() {
     pb.set_input_sizes(public_input_size); // median + n public keys
 
     r1cs_ppzksnark_proving_key<ppT> pk;
-    std::ifstream pk_dump("pk");
+    std::ifstream pk_dump("keys/pk");
     pk_dump >> pk;
 
     r1cs_ppzksnark_verification_key<ppT> vk;
-    std::ifstream vk_dump("vk");
+    std::ifstream vk_dump("keys/vk");
     vk_dump >> vk;
 
     r1cs_ppzksnark_processed_verification_key<ppT> pvk;
-    std::ifstream pvk_dump("pvk");
+    std::ifstream pvk_dump("keys/pvk");
     pvk_dump >> pvk;
 
     libff::print_header("R1CS GG-ppzkSNARK Prover");
