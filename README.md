@@ -31,3 +31,4 @@ of [this](https://www.youtube.com/channel/UC1usFRN4LCMcfIV7UjHNuQg) course shoul
 the basics of what we are doing here. 
 
 
+`python3 tests/test_eddsa.py` generates `keys/signature` files with a signature
