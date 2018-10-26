@@ -31,7 +31,7 @@
 #include <libsnark/zk_proof_systems/ppzksnark/r1cs_ppzksnark/r1cs_ppzksnark.hpp>
 
 // ZoKrates
-#include <ZoKrates/wraplibsnark.cpp>
+#include "wraplibsnark.cpp"
 
 
 
