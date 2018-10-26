@@ -20,6 +20,7 @@
 
 
 #include <fstream>
+#include <depends/libsnark/libsnark/zk_proof_systems/ppzksnark/r1cs_ppzksnark/r1cs_ppzksnark.hpp>
 #include "libff/algebra/curves/alt_bn128/alt_bn128_pp.hpp" //hold key
 #include "baby_jubjub.hpp"
 #include "eddsa.hpp"
@@ -85,7 +86,30 @@ int main() {
     x.generate_r1cs_witness();
 
     assert(pb.is_satisfied());
-    std::cout << pb.num_constraints() << std::endl;
+
+    pb.set_input_sizes(1 + n * 2 * 256); // median + n public keys
+
+    libff::print_header("R1CS GG-ppzkSNARK Generator");
+    r1cs_ppzksnark_keypair<ppT> keypair = r1cs_ppzksnark_generator<ppT>(pb.get_constraint_system());
+    printf("\n"); libff::print_indent(); libff::print_mem("after generator");
+
+    libff::print_header("Preprocess verification key");
+    r1cs_ppzksnark_processed_verification_key<ppT> pvk = r1cs_ppzksnark_verifier_process_vk<ppT>(keypair.vk);
+
+    libff::print_header("R1CS GG-ppzkSNARK Prover");
+    r1cs_ppzksnark_proof<ppT> proof = r1cs_ppzksnark_prover<ppT>(keypair.pk, pb.primary_input(), pb.auxiliary_input());
+    printf("\n"); libff::print_indent(); libff::print_mem("after prover");
+
+    libff::print_header("R1CS GG-ppzkSNARK Verifier");
+    const bool ans = r1cs_ppzksnark_verifier_strong_IC<ppT>(keypair.vk, pb.primary_input(), proof);
+    printf("\n"); libff::print_indent(); libff::print_mem("after verifier");
+    printf("* The verification result is: %s\n", (ans ? "PASS" : "FAIL"));
+
+    libff::print_header("R1CS GG-ppzkSNARK Online Verifier");
+    const bool ans2 = r1cs_ppzksnark_online_verifier_strong_IC<ppT>(pvk, pb.primary_input(), proof);
+    assert(ans == ans2);
+
+    std::cout << "Total constraint: " << pb.num_constraints() << std::endl;
 
     return 0;
 }
