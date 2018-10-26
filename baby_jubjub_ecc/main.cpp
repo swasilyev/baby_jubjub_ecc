@@ -72,7 +72,7 @@ int main() {
         ms[i].allocate(pb, 256, "m_" + i);
     }
 
-    std::ifstream file("tests/signature");
+    std::ifstream file("signature");
     std::string S_bin, message_bin, pk_x_bin, pk_y_bin, r_x_bin, r_y_bin;
     file >> S_bin >> message_bin >> pk_x_bin >> pk_y_bin >> r_x_bin >> r_y_bin;
     ss[0].fill_with_bits(pb, from_binary_string(S_bin));
@@ -106,7 +106,7 @@ int main() {
 
 //    std::vector<FieldT> public_input(public_input_size);
     std::vector<FieldT> public_input;
-    public_input.emplace_back("5119503429299724195577862209713318178819449726699528330339445386518787908226");
+    public_input.emplace_back(123);
     for (auto b : from_binary_string(pk_x_bin + pk_y_bin)) {
         public_input.emplace_back(b);
     }

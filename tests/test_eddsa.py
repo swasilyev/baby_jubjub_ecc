@@ -45,7 +45,18 @@ if __name__ == "__main__":
     base = Point(Fq(Bx), Fq(By))
         
     sk = "123123"
-    m = "4147a3c1586a12cd3ebbc0ad31d6161e10a57894fe2d114d98b509a812918ad0"
+    value = 123
+    value = bin(value) # '0b1111011'
+    print(value)
+    value = value[2:].zfill(256) # '0...01111011'
+    print(value)
+    value = value[::-1] # '11011110...0'
+    print(value)
+    value = hex(int(value, 2)) # 0xde0...0
+    print(value)
+    value = value[2:]
+
+    m = value
        #"3384407148f0a084436f6bb1ca2ad6dc2eb1d30570d6b8917d431c8622313ca0"
     pk = publickey(sk)
 
