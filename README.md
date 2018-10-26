@@ -29,6 +29,13 @@ cd build
 [Lecture 16](https://www.youtube.com/watch?v=vnpZXJL6QCQ) and [Lecture 17] (https://www.youtube.com/watch?v=zTt4gvuQ6sY)
 of [this](https://www.youtube.com/channel/UC1usFRN4LCMcfIV7UjHNuQg) course should help you get a good understanding of 
 the basics of what we are doing here. 
+.
+.
+.
+.
+.
 
-
-`python3 tests/test_eddsa.py` generates `keys/signature` files with a signature
+1. run generator.cpp main() from root -- generates pk, vk and pvk in libsnark format and vk.json in keys/ folder
+2. `python3 tests/test_eddsa.py` from root generates `keys/signature` files with a signature
+3. run prover.cpp main() creates and verifies the proof using keys/signature for public and private inputs
+4. ...
