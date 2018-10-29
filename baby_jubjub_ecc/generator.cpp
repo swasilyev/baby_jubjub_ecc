@@ -20,7 +20,7 @@
 
 
 #include <fstream>
-#include <depends/libsnark/libsnark/zk_proof_systems/ppzksnark/r1cs_ppzksnark/r1cs_ppzksnark.hpp>
+#include <depends/libsnark/libsnark/zk_proof_systems/ppzksnark/r1cs_gg_ppzksnark_zok/r1cs_gg_ppzksnark_zok.hpp>
 #include "libff/algebra/curves/alt_bn128/alt_bn128_pp.hpp" //hold key
 #include "baby_jubjub.hpp"
 #include "eddsa.hpp"
@@ -81,13 +81,13 @@ int main() {
     pb.set_input_sizes(public_input_size); // Which inputs are public is also important.
 
     libff::print_header("R1CS GG-ppzkSNARK Generator");
-    r1cs_ppzksnark_keypair<ppT> keypair = r1cs_ppzksnark_generator<ppT>(pb.get_constraint_system());
+    r1cs_gg_ppzksnark_zok_keypair<ppT> keypair = r1cs_gg_ppzksnark_zok_generator<ppT>(pb.get_constraint_system());
     printf("\n");
     libff::print_indent();
     libff::print_mem("after generator");
 
     libff::print_header("Preprocess verification key");
-    r1cs_ppzksnark_processed_verification_key<ppT> pvk = r1cs_ppzksnark_verifier_process_vk<ppT>(keypair.vk);
+    r1cs_gg_ppzksnark_zok_processed_verification_key<ppT> pvk = r1cs_gg_ppzksnark_zok_verifier_process_vk<ppT>(keypair.vk);
 
     // We dump the keys in libsnark format. pk is required to the prover, vks -- for the verifier
     // By the way reading the pk from disk is not that faster than generating it.
@@ -103,7 +103,7 @@ int main() {
     pvk_dump << pvk;
 
     // And also in json that will be used to instantiate the verifier smart contract
-    vk2json(keypair, "keys/vk.json");
+//    vk2json(keypair, "keys/vk.json");
 
     std::cout << "Total constraints: " << pb.num_constraints() << std::endl;
 

@@ -20,7 +20,7 @@
 
 
 #include <fstream>
-#include <depends/libsnark/libsnark/zk_proof_systems/ppzksnark/r1cs_ppzksnark/r1cs_ppzksnark.hpp>
+#include <depends/libsnark/libsnark/zk_proof_systems/ppzksnark/r1cs_gg_ppzksnark_zok/r1cs_gg_ppzksnark_zok.hpp>
 #include "libff/algebra/curves/alt_bn128/alt_bn128_pp.hpp" //hold key
 #include "baby_jubjub.hpp"
 #include "eddsa.hpp"
@@ -93,20 +93,20 @@ int main() {
     const size_t public_input_size = 1 + n * 2 * 256;
     pb.set_input_sizes(public_input_size); // median + n public keys
 
-    r1cs_ppzksnark_proving_key<ppT> pk;
+    r1cs_gg_ppzksnark_zok_proving_key<ppT> pk;
     std::ifstream pk_dump("keys/pk");
     pk_dump >> pk;
 
-    r1cs_ppzksnark_verification_key<ppT> vk;
+    r1cs_gg_ppzksnark_zok_verification_key<ppT> vk;
     std::ifstream vk_dump("keys/vk");
     vk_dump >> vk;
 
-    r1cs_ppzksnark_processed_verification_key<ppT> pvk;
+    r1cs_gg_ppzksnark_zok_processed_verification_key<ppT> pvk;
     std::ifstream pvk_dump("keys/pvk");
     pvk_dump >> pvk;
 
     libff::print_header("R1CS GG-ppzkSNARK Prover");
-    r1cs_ppzksnark_proof<ppT> proof = r1cs_ppzksnark_prover<ppT>(pk, pb.primary_input(), pb.auxiliary_input());
+    r1cs_gg_ppzksnark_zok_proof<ppT> proof = r1cs_gg_ppzksnark_zok_prover<ppT>(pk, pb.primary_input(), pb.auxiliary_input());
     printf("\n"); libff::print_indent(); libff::print_mem("after prover");
 
     std::vector<FieldT> public_input;
@@ -118,12 +118,12 @@ int main() {
     std::cout << "Median: " << public_input[0] << std::endl;
 
     libff::print_header("R1CS GG-ppzkSNARK Verifier");
-    const bool ans = r1cs_ppzksnark_verifier_strong_IC<ppT>(vk, public_input, proof);
+    const bool ans = r1cs_gg_ppzksnark_zok_verifier_strong_IC<ppT>(vk, public_input, proof);
     printf("\n"); libff::print_indent(); libff::print_mem("after verifier");
     printf("* The verification result is: %s\n", (ans ? "PASS" : "FAIL"));
 
     libff::print_header("R1CS GG-ppzkSNARK Online Verifier");
-    const bool ans2 = r1cs_ppzksnark_online_verifier_strong_IC<ppT>(pvk, public_input, proof);
+    const bool ans2 = r1cs_gg_ppzksnark_zok_online_verifier_strong_IC<ppT>(pvk, public_input, proof);
     assert(ans == ans2);
 
     std::cout << "Total constraints: " << pb.num_constraints() << std::endl;
