@@ -28,6 +28,7 @@
 #include "pedersen_commitment.hpp"
 #include "oracle_protoboard.hpp"
 #include "wraplibsnark.cpp"
+#include "ethsnarks/export.cpp"
 
 
 using namespace libsnark;
@@ -93,6 +94,8 @@ int main() {
     }
 
     std::cout << "Median: " << public_input[0] << std::endl;
+
+    ethsnarks::proof2json_file(proof, pb.primary_input(), "keys/proof.ethsnarks.json");
 
     libff::print_header("R1CS GG-ppzkSNARK Verifier");
     const bool ans = r1cs_gg_ppzksnark_zok_verifier_strong_IC<ppT>(vk, public_input, proof);
