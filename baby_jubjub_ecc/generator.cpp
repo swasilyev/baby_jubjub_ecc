@@ -26,7 +26,8 @@
 #include "eddsa.hpp"
 #include "pedersen_commitment.hpp"
 #include "median_gadget.cpp"
-#include "export.cpp"
+//#include "export.cpp"
+#include "wraplibsnark.cpp"
 
 
 using namespace libsnark;
@@ -93,14 +94,18 @@ int main() {
     // By the way reading the pk from disk is not that faster than generating it.
     // So we will need to make the prover generate proofs online.
 
-    std::ofstream pk_dump("keys/pk");
+    std::ofstream pk_dump("keys/pk.libsnark");
     pk_dump << keypair.pk;
 
-    std::ofstream vk_dump("keys/vk");
+    std::ofstream vk_dump("keys/vk.libsnark");
     vk_dump << keypair.vk;
 
-    std::ofstream pvk_dump("keys/pvk");
+    std::ofstream pvk_dump("keys/pvk.libsnark");
     pvk_dump << pvk;
+
+    serializeProvingKeyToFile(keypair.pk, "keys/pk.zokrates");
+    serializeVerificationKeyToFile(keypair.vk, "keys/vk.zokrates");
+    exportVerificationKey(keypair);
 
     // And also in json that will be used to instantiate the verifier smart contract
 //    vk2json(keypair, "keys/vk.json");

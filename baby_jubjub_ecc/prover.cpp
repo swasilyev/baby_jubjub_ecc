@@ -26,6 +26,7 @@
 #include "eddsa.hpp"
 #include "pedersen_commitment.hpp"
 #include "median_gadget.cpp"
+#include "wraplibsnark.cpp"
 
 
 using namespace libsnark;
