@@ -26,7 +26,7 @@
 #include "eddsa.hpp"
 #include "pedersen_commitment.hpp"
 #include "median_gadget.hpp"
-//#include "export.cpp"
+#include "ethsnarks/export.cpp"
 #include "wraplibsnark.cpp"
 #include "oracle_protoboard.hpp"
 
@@ -69,8 +69,7 @@ int main() {
     serializeVerificationKeyToFile(keypair.vk, "keys/vk.zokrates");
     exportVerificationKey(keypair);
 
-    // And also in json that will be used to instantiate the verifier smart contract
-//    vk2json(keypair, "keys/vk.json");
+    ethsnarks::vk2json_file(keypair.vk, "keys/vk.ethsnarks");
 
     std::cout << "Total constraints: " << pb.num_constraints() << std::endl;
 
