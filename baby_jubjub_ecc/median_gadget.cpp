@@ -2,8 +2,6 @@
 // Created by svasilyev on 10/24/18.
 //
 
-#include "median_gadget.hpp"
-
 namespace libsnark {
     template<typename FieldT, typename HashT>
     median_gadget<FieldT, HashT>::median_gadget(

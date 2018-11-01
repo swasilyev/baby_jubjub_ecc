@@ -25,7 +25,7 @@
 #include "baby_jubjub.hpp"
 #include "eddsa.hpp"
 #include "pedersen_commitment.hpp"
-#include "median_gadget.cpp"
+#include "oracle_protoboard.hpp"
 #include "wraplibsnark.cpp"
 
 
@@ -50,60 +50,35 @@ int main() {
 
     const size_t n = 1;
 
-    protoboard<FieldT> pb;
-
-    pb_variable<FieldT> median;
-    median.allocate(pb, "median");
-
-    std::vector<pb_variable_array<FieldT>> pk_x_bins(n);
-    std::vector<pb_variable_array<FieldT>> pk_y_bins(n);
-    for (size_t i = 0; i < n; i++) {
-        pk_x_bins[i].allocate(pb, 256, "pk_x_bin_" + i);
-        pk_y_bins[i].allocate(pb, 256, "pk_y_bin_" + i);
-    }
-
-    std::vector<pb_variable_array<FieldT>> r_x_bins(n);
-    std::vector<pb_variable_array<FieldT>> r_y_bins(n);
-    std::vector<pb_variable_array<FieldT>> ss(n);
-    std::vector<pb_variable_array<FieldT>> ms(n);
-    for (size_t i = 0; i < n; i++) {
-        r_x_bins[i].allocate(pb, 256, "r_x_bin_" + i);
-        r_y_bins[i].allocate(pb, 256, "r_y_bin_" + i);
-        ss[i].allocate(pb, 256, "s_" + i);
-        ms[i].allocate(pb, 256, "m_" + i);
-    }
+    oracle_protoboard<FieldT, HashT> pb(n);
 
     std::ifstream file("keys/signature");
     std::string S_bin, message_bin, pk_x_bin, pk_y_bin, r_x_bin, r_y_bin;
     file >> S_bin >> message_bin >> pk_x_bin >> pk_y_bin >> r_x_bin >> r_y_bin;
-    ss[0].fill_with_bits(pb, from_binary_string(S_bin));
-    ms[0].fill_with_bits(pb, from_binary_string(message_bin));
-    pk_x_bins[0].fill_with_bits(pb, from_binary_string(pk_x_bin));
-    pk_y_bins[0].fill_with_bits(pb, from_binary_string(pk_y_bin));
-    r_x_bins[0].fill_with_bits(pb, from_binary_string(r_x_bin));
-    r_y_bins[0].fill_with_bits(pb, from_binary_string(r_y_bin));
+    pb.ss[0].fill_with_bits(pb, from_binary_string(S_bin));
+    pb.ms[0].fill_with_bits(pb, from_binary_string(message_bin));
+    pb.pk_x_bins[0].fill_with_bits(pb, from_binary_string(pk_x_bin));
+    pb.pk_y_bins[0].fill_with_bits(pb, from_binary_string(pk_y_bin));
+    pb.r_x_bins[0].fill_with_bits(pb, from_binary_string(r_x_bin));
+    pb.r_y_bins[0].fill_with_bits(pb, from_binary_string(r_y_bin));
 
-    median_gadget<FieldT, HashT> x(pb, 1, median, pk_x_bins, pk_y_bins, r_x_bins, r_y_bins, ss, ms);
-    x.generate_r1cs_constraints();
-    x.generate_r1cs_witness();
+    pb.generate_r1cs_constraints();
+    pb.generate_r1cs_witness();
 
-    std::cout << "Median: " << pb.val(median) << std::endl;
+    std::cout << "Median: " << pb.val(pb.median) << std::endl;
 
     assert(pb.is_satisfied());
 
-    const size_t public_input_size = 1 + n * 2 * 256;
-    pb.set_input_sizes(public_input_size); // median + n public keys
-
     r1cs_gg_ppzksnark_zok_proving_key<ppT> pk;
-    std::ifstream pk_dump("keys/pk");
+    std::ifstream pk_dump("keys/pk.libsnark");
     pk_dump >> pk;
 
     r1cs_gg_ppzksnark_zok_verification_key<ppT> vk;
-    std::ifstream vk_dump("keys/vk");
+    std::ifstream vk_dump("keys/vk.libsnark");
     vk_dump >> vk;
 
     r1cs_gg_ppzksnark_zok_processed_verification_key<ppT> pvk;
-    std::ifstream pvk_dump("keys/pvk");
+    std::ifstream pvk_dump("keys/pvk.libsnark");
     pvk_dump >> pvk;
 
     libff::print_header("R1CS GG-ppzkSNARK Prover");

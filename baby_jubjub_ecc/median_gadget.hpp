@@ -50,4 +50,6 @@ namespace libsnark {
     };
 }
 
+#include "median_gadget.cpp"
+
 #endif //BABY_JUBJUB_ECC_MEDIAN_GADGET_HPP
