@@ -69,7 +69,7 @@ int main() {
     serializeVerificationKeyToFile(keypair.vk, "keys/vk.zokrates");
     exportVerificationKey(keypair);
 
-    ethsnarks::vk2json_file(keypair.vk, "keys/vk.ethsnarks");
+    ethsnarks::vk2json_file(keypair.vk, "keys/vk.ethsnarks.json");
 
     std::cout << "Total constraints: " << pb.num_constraints() << std::endl;
 

@@ -11,7 +11,9 @@ std::string outputPointG1AffineAsHex( G1T _p );
 
 std::string outputPointG2AffineAsHex( G2T _p );
 
-std::string proof_to_json( ProofT &proof, PrimaryInputT &input );
+std::string proof_to_json( ProofT &proof, const PrimaryInputT &input );
+
+void proof2json_file(ProofT &proof, const PrimaryInputT &input, const std::string &path);
 
 std::string vk2json( VerificationKeyT &vk );
 

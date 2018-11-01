@@ -72,7 +72,7 @@ std::string outputPointG2AffineAsHex(libff::alt_bn128_G2 _p)
 }
 
 
-std::string proof_to_json(ProofT &proof, PrimaryInputT &input) {
+std::string proof_to_json(ProofT &proof, const PrimaryInputT &input) {
     std::stringstream ss;
 
     ss << "{\n";
@@ -94,6 +94,14 @@ std::string proof_to_json(ProofT &proof, PrimaryInputT &input) {
     ss.rdbuf()->pubseekpos(0, std::ios_base::out);
 
     return(ss.str());
+}
+
+void proof2json_file(ProofT &proof, const PrimaryInputT &input, const std::string &path) {
+    std::ofstream fh;
+    fh.open(path, std::ios::binary);
+    fh << proof_to_json(proof, input);
+    fh.flush();
+    fh.close();
 }
 
 
