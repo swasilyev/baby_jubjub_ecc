@@ -17,6 +17,8 @@ namespace libsnark {
         const size_t n;
         protoboard<FieldT> pb;
         pb_variable<FieldT> median;
+        pb_variable_array<FieldT> pks_packed;
+        pb_variable_array<FieldT> pks_unpacked;
         std::vector<pb_variable_array<FieldT>> pk_x_bins;
         std::vector<pb_variable_array<FieldT>> pk_y_bins;
         std::vector<pb_variable_array<FieldT>> r_x_bins;
@@ -25,6 +27,7 @@ namespace libsnark {
         std::vector<pb_variable_array<FieldT>> ms;
 
         std::shared_ptr<median_gadget<FieldT, HashT>> _median_gadget;
+        std::shared_ptr<multipacking_gadget<FieldT>> pks_packer;
 
         oracle_protoboard(const size_t n);
 

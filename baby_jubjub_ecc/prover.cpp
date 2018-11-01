@@ -22,6 +22,7 @@
 #include <fstream>
 #include <depends/libsnark/libsnark/zk_proof_systems/ppzksnark/r1cs_gg_ppzksnark_zok/r1cs_gg_ppzksnark_zok.hpp>
 #include "libff/algebra/curves/alt_bn128/alt_bn128_pp.hpp" //hold key
+#include "libff/algebra/fields/field_utils.hpp"
 #include "baby_jubjub.hpp"
 #include "eddsa.hpp"
 #include "pedersen_commitment.hpp"
@@ -87,7 +88,7 @@ int main() {
 
     std::vector<FieldT> public_input;
     public_input.emplace_back(123);
-    for (auto b : from_binary_string(pk_x_bin + pk_y_bin)) {
+    for (auto b : libff::pack_bit_vector_into_field_element_vector<FieldT>(from_binary_string(pk_x_bin + pk_y_bin))) {
         public_input.emplace_back(b);
     }
 
